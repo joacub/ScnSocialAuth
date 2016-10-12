@@ -2,6 +2,7 @@
 
 namespace ScnSocialAuth\Options;
 
+use Tracy\Debugger;
 use Zend\Stdlib\AbstractOptions;
 
 class ModuleOptions extends AbstractOptions
@@ -26,6 +27,7 @@ class ModuleOptions extends AbstractOptions
         'vkontakte',
         'yandex',
         'instagram',
+        'path',
     );
 
     /**
@@ -112,6 +114,35 @@ class ModuleOptions extends AbstractOptions
      * @var string
      */
     protected $googleSecret;
+
+    /**
+     * @var boolean
+     */
+    protected $pathEnabled = false;
+
+    /**
+     * @var string
+     */
+    protected $pathClientId;
+
+    /**
+     * @var string
+     */
+    protected $pathSecret;
+    /**
+     * @var boolean
+     */
+    protected $eventbriteEnabled = false;
+
+    /**
+     * @var string
+     */
+    protected $eventbriteClientId;
+
+    /**
+     * @var string
+     */
+    protected $eventbriteSecret;
 
     /**
      * @var string
@@ -747,6 +778,62 @@ class ModuleOptions extends AbstractOptions
     public function getGoogleHd()
     {
         return $this->googleHd;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPathEnabled(): bool
+    {
+        return $this->pathEnabled;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getPathEnabled(): bool
+    {
+        return $this->isPathEnabled();
+    }
+
+    /**
+     * @param boolean $pathEnabled
+     */
+    public function setPathEnabled(bool $pathEnabled)
+    {
+        $this->pathEnabled = $pathEnabled;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPathClientId()
+    {
+        return $this->pathClientId;
+    }
+
+    /**
+     * @param string $pathClientId
+     */
+    public function setPathClientId(string $pathClientId)
+    {
+        $this->pathClientId = $pathClientId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPathSecret()
+    {
+        return $this->pathSecret;
+    }
+
+    /**
+     * @param string $pathSecret
+     */
+    public function setPathSecret(string $pathSecret)
+    {
+        $this->pathSecret = $pathSecret;
     }
 
     /**
@@ -1405,4 +1492,58 @@ class ModuleOptions extends AbstractOptions
     {
         $this->bitbucketSecret = $bitbucketSecret;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isEventbriteEnabled(): bool
+    {
+        return $this->eventbriteEnabled;
+    }
+
+    public function getEventbriteEnabled()
+    {
+        return $this->isEventbriteEnabled();
+    }
+
+    /**
+     * @param boolean $eventbriteEnabled
+     */
+    public function setEventbriteEnabled(bool $eventbriteEnabled)
+    {
+        $this->eventbriteEnabled = $eventbriteEnabled;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventbriteClientId()
+    {
+        return $this->eventbriteClientId;
+    }
+
+    /**
+     * @param string $eventbriteClientId
+     */
+    public function setEventbriteClientId(string $eventbriteClientId)
+    {
+        $this->eventbriteClientId = $eventbriteClientId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventbriteSecret()
+    {
+        return $this->eventbriteSecret;
+    }
+
+    /**
+     * @param string $eventbriteSecret
+     */
+    public function setEventbriteSecret(string $eventbriteSecret)
+    {
+        $this->eventbriteSecret = $eventbriteSecret;
+    }
+
 }

@@ -8,10 +8,9 @@
 
 namespace ScnSocialAuth\Controller;
 
-use Zend\Mvc\Application;
-use Zend\Mvc\Router\RouteInterface;
-use Zend\Mvc\Router\Exception;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Mvc\Application;
+use Zend\Router\RouteStackInterface;
 use ZfcUser\Options\ModuleOptions;
 
 /**
@@ -37,7 +36,7 @@ class RedirectCallback
      * @param RouteInterface $router
      * @param ModuleOptions  $options
      */
-    public function __construct(Application $application, RouteInterface $router, ModuleOptions $options)
+    public function __construct(Application $application, RouteStackInterface $router, ModuleOptions $options)
     {
         $this->router = $router;
         $this->application = $application;
@@ -67,13 +66,12 @@ class RedirectCallback
     private function getRedirectRouteFromRequest()
     {
         $request  = $this->application->getRequest();
-        $redirect = $request->getQuery('redirect');
+        $redirect = $request->getPost('redirect', $request->getQuery('redirect'));
         if ($redirect && $this->routeExists($redirect)) {
             return $redirect;
         }
 
-        $redirect = $request->getPost('redirect');
-        if ($redirect && $this->routeExists($redirect)) {
+        if($redirect) {
             return $redirect;
         }
 
@@ -88,7 +86,7 @@ class RedirectCallback
     {
         try {
             $this->router->assemble(array(), array('name' => $route));
-        } catch (Exception\RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             return false;
         }
 
@@ -108,7 +106,9 @@ class RedirectCallback
         $useRedirect = $this->options->getUseRedirectParameterIfPresent();
         $routeExists = ($redirect && $this->routeExists($redirect));
         if (!$useRedirect || !$routeExists) {
-            $redirect = false;
+            if($redirect && $useRedirect) {
+                return $redirect;
+            }
         }
 
         switch ($currentRoute) {

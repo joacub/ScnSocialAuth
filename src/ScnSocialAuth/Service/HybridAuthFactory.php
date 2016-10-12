@@ -9,9 +9,12 @@
 namespace ScnSocialAuth\Service;
 
 use Hybrid_Auth;
-use Zend\Mvc\Router\Http\TreeRouteStack;
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Zend\Router\Http\TreeRouteStack;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -24,13 +27,12 @@ class HybridAuthFactory implements FactoryInterface
     {
         // Making sure the SessionManager is initialized
         // before creating HybridAuth components
-        $sessionManager = $services->get('ScnSocialAuth_ZendSessionManager')->start();
+        //$sessionManager = $services->get('ScnSocialAuth_ZendSessionManager')->start();
 
         /* @var $options \ScnSocialAuth\Options\ModuleOptions */
         $options = $services->get('ScnSocialAuth-ModuleOptions');
 
         $baseUrl = $this->getBaseUrl($services);
-
         $hybridAuth = new Hybrid_Auth(
             array(
                 'base_url' => $baseUrl,
@@ -86,6 +88,28 @@ class HybridAuthFactory implements FactoryInterface
                         ),
                         'scope' => $options->getGoogleScope(),
                         'hd' => $options->getGoogleHd(),
+                    ),
+                    'Path' => array(
+                        'enabled' => $options->getPathEnabled(),
+                        'keys' => array(
+                            'id' => $options->getPathClientId(),
+                            'secret' => $options->getPathSecret(),
+                        ),
+                        'wrapper' => array(
+                            'class' => '\ScnSocialAuth\HybridAuth\Provider\Path',
+                            'path' => realpath(__DIR__ . '/../HybridAuth/Provider/Path.php'),
+                        ),
+                    ),
+                    'Eventbrite' => array(
+                        'enabled' => $options->getEventbriteEnabled(),
+                        'keys' => array(
+                            'id' => $options->getEventbriteClientId(),
+                            'secret' => $options->getEventbriteSecret(),
+                        ),
+                        'wrapper' => array(
+                            'class' => '\ScnSocialAuth\HybridAuth\Provider\Eventbrite',
+                            'path' => realpath(__DIR__ . '/../HybridAuth/Provider/Eventbrite.php'),
+                        ),
                     ),
                     'LinkedIn' => array(
                         'enabled' => $options->getLinkedInEnabled(),
@@ -181,6 +205,12 @@ class HybridAuthFactory implements FactoryInterface
 
         return $hybridAuth;
     }
+
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return $this->createService($container);
+    }
+
 
     public function getBaseUrl(ServiceLocatorInterface $services)
     {
